@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafeteira 3D Interativa</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">☕ Cafeteira Mágica</h1>
+        
+        <div class="coffee-maker">
+            <!-- Parte superior - Reservatório de água -->
+            <div class="water-tank">
+                <div class="water-level" id="waterLevel"></div>
+                <div class="tank-shine"></div>
+            </div>
+            
+            <!-- Corpo principal da cafeteira -->
+            <div class="main-body">
+                <!-- Compartimento de café -->
+                <div class="coffee-compartment" id="coffeeCompartment">
+                    <div class="coffee-grounds" id="coffeeGrounds"></div>
+                    <div class="compartment-lid" id="compartmentLid">
+                        <span>CAFÉ</span>
+                    </div>
+                </div>
+                
+                <!-- Painel de controle -->
+                <div class="control-panel">
+                    <div class="display" id="display">
+                        <span id="statusText">Pronto para usar!</span>
+                    </div>
+                    <div class="led-indicator" id="ledIndicator"></div>
+                </div>
+                
+                <!-- Bico de saída do café -->
+                <div class="spout">
+                    <div class="spout-inner"></div>
+                    <div class="coffee-stream" id="coffeeStream"></div>
+                </div>
+            </div>
+            
+            <!-- Base da cafeteira -->
+            <div class="base">
+                <div class="base-platform">
+                    <!-- Xícara -->
+                    <div class="cup-container">
+                        <div class="cup">
+                            <div class="cup-inner">
+                                <div class="coffee-liquid" id="coffeeLiquid"></div>
+                                <div class="cup-shine"></div>
+                            </div>
+                            <div class="cup-handle"></div>
+                        </div>
+                        <div class="saucer"></div>
+                        <!-- Vapor do café -->
+                        <div class="steam-container" id="steamContainer">
+                            <div class="steam steam1"></div>
+                            <div class="steam steam2"></div>
+                            <div class="steam steam3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sombra da cafeteira -->
+            <div class="machine-shadow"></div>
+        </div>
+        
+        <!-- Botões de controle -->
+        <div class="buttons-container">
+            <button class="btn btn-add" id="btnAddCoffee" onclick="addCoffee()">
+                <span class="btn-icon">☕</span>
+                Adicionar Café
+            </button>
+            <button class="btn btn-brew" id="btnBrew" onclick="brewCoffee()" disabled>
+                <span class="btn-icon">▶</span>
+                Passar Café
+            </button>
+            <button class="btn btn-reset" id="btnReset" onclick="resetMachine()">
+                <span class="btn-icon">🔄</span>
+                Resetar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Estado da máquina
+        let hasCoffee = false;
+        let isBrewing = false;
+        let isReady = false;
+
+        // Elementos do DOM
+        const coffeeGrounds = document.getElementById('coffeeGrounds');
+        const compartmentLid = document.getElementById('compartmentLid');
+        const coffeeStream = document.getElementById('coffeeStream');
+        const coffeeLiquid = document.getElementById('coffeeLiquid');
+        const waterLevel = document.getElementById('waterLevel');
+        const steamContainer = document.getElementById('steamContainer');
+        const ledIndicator = document.getElementById('ledIndicator');
+        const statusText = document.getElementById('statusText');
+        const btnAddCoffee = document.getElementById('btnAddCoffee');
+        const btnBrew = document.getElementById('btnBrew');
+        const btnReset = document.getElementById('btnReset');
+
+        // Adicionar café no compartimento
+        function addCoffee() {
+            if (hasCoffee || isBrewing) return;
+            
+            // Animação da tampa abrindo
+            compartmentLid.classList.add('open');
+            
+            setTimeout(() => {
+                // Adiciona o café
+                coffeeGrounds.classList.add('filled');
+                hasCoffee = true;
+                
+                // Fecha a tampa
+                setTimeout(() => {
+                    compartmentLid.classList.remove('open');
+                    updateStatus('Café adicionado! ✓');
+                    btnBrew.disabled = false;
+                    btnAddCoffee.disabled = true;
+                }, 500);
+            }, 400);
+        }
+
+        // Passar o café
+        function brewCoffee() {
+            if (!hasCoffee || isBrewing) return;
+            
+            isBrewing = true;
+            btnBrew.disabled = true;
+            ledIndicator.classList.add('brewing');
+            updateStatus('Preparando café... ☕');
+            
+            // Água descendo
+            waterLevel.classList.add('draining');
+            
+            // Inicia o fluxo de café após um momento
+            setTimeout(() => {
+                coffeeStream.classList.add('flowing');
+                
+                // Café enchendo a xícara
+                setTimeout(() => {
+                    coffeeLiquid.classList.add('filling');
+                    updateStatus('Enchendo a xícara... 🍵');
+                }, 500);
+                
+                // Para o fluxo e finaliza
+                setTimeout(() => {
+                    coffeeStream.classList.remove('flowing');
+                    coffeeGrounds.classList.remove('filled');
+                    ledIndicator.classList.remove('brewing');
+                    ledIndicator.classList.add('ready');
+                    steamContainer.classList.add('active');
+                    isBrewing = false;
+                    isReady = true;
+                    updateStatus('Café pronto! Aproveite! ☕✨');
+                }, 3500);
+            }, 1000);
+        }
+
+        // Resetar a máquina
+        function resetMachine() {
+            // Reseta todos os estados visuais
+            coffeeGrounds.classList.remove('filled');
+            coffeeLiquid.classList.remove('filling');
+            waterLevel.classList.remove('draining');
+            steamContainer.classList.remove('active');
+            ledIndicator.classList.remove('brewing', 'ready');
+            coffeeStream.classList.remove('flowing');
+            
+            // Reseta estados
+            hasCoffee = false;
+            isBrewing = false;
+            isReady = false;
+            
+            // Reseta botões
+            btnAddCoffee.disabled = false;
+            btnBrew.disabled = true;
+            
+            updateStatus('Pronto para usar!');
+        }
+
+        // Atualiza o texto de status
+        function updateStatus(text) {
+            statusText.style.opacity = '0';
+            setTimeout(() => {
+                statusText.textContent = text;
+                statusText.style.opacity = '1';
+            }, 200);
+        }
+    </script>
+</body>
+</html>
