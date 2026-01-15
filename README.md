@@ -1,4 +1,4 @@
-# Cafeteira-Magica-3D
+# Cafeteira-Mágica-3D
 Cafeteira 3D Interativa
 
 Estrutura HTML de uma cafeteira com reservatório de água, 
